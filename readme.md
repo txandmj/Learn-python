@@ -1,11 +1,5 @@
-# A first-level heading
+[函数的传参机制：](###函数的传参机制：)
 
-Some basic Git commands are:
-```
-git status
-git add
-git commit
-```
 ### 整型
 整型能最大到4300位，比Java，C语言的整型最大数大很多
 
