@@ -636,3 +636,88 @@ class DerivedClassName(BaseClassName):
 1.	子类不能直接访问父类私有方法和属性
 2.	访问不限于直接父类，而是建立从子类向上级父类的查找关系 A->B->C
 3.	建议使用super()的方式，因为如果使用父类名方式，一旦父类变化，类名统一需要修改
+
+## 重写override
+即子类继承父类的**属性和方法**后，根据业务需要，再重新定义同名的属性或方法
+
+## 类型注解
+- 随着项目越来越大，代码也就会越来越多，容易忘记某一个方法的参数类型是什么
+- 一旦传入错误类型的参数，python是解释性语言，只有运行时候才能发现问题，这对大型项目来说是一个巨大的灾难
+类型注解作用和说明
+- 类型提示，防止运行时出现参数类型，返回值类型，变量类型不符合
+- 作为开发文档附加说明，方便使用者调用时传入和返回参数类型
+- 加入后并不会影响程序的运行，不会报错，只会提醒
+- pycharm支持类型注解，参数类型错误会黄色提示
+```python
+def fun1(a: str): #给形参a进行类型注解
+    for ele in a:
+        print(ele)
+#ctrl + p 参数类型提示
+#如果错了，会出现异常
+fun1("100")
+```
+### 变量的类型注解 - 变量：类型
+```python
+n1: int = 10
+n2: float = 10.1
+is_pass: bool = True
+name: str = "Nancy"
+```
+### 实例对象类型注解
+```python
+cat: Cat = Cat()
+```
+### 容器类型注解
+```python
+my_list: list = [1, 2, 3]
+my_tuple: tuple = ("run", "walk", "laugh")
+my_set2: set = {"run", "walk", "laugh"}
+my_dict2: dict = {"jack": 100, "nancy": 89}
+```
+### 容器详细类型注解
+```python
+# 详细注解都是在[]内
+my_list2: list[int] = [100, 200, 300]
+my_tuple2: tuple[str, str, float, int] = ("hi", "hello", 11.1, 100)
+my_set2: set[str] = {"run", "walk", "laugh"}
+my_dict2: dict[str, int] = {"jack": 100, "nancy": 89}
+```
+### 在注释中使用注解
+```python
+#type: 类型注解
+n3 = 89.9 #type: float
+my_list3 = [1, 2, 3] #type: list[int]
+email = "aaaaa" #type: str
+```
+## 函数（方法）类型注解
+```python
+def 函数名（形参名：type, 形参名：type,...) -> 返回值类型：
+    statement
+
+def fun1(name: str):
+    for ele in name:
+        print(ele)
+
+fun1("nancy")
+
+def fun2(a: int, b: int) -> int:
+    return a + b
+print(fun2(10, 20))
+```
+## Union类型
+- 可以定义联合类型注解
+- 在变量/方法都可以使用Union联合类型注解
+- 使用的时候，需要先导入Union: from typing import Union
+
+**基本语法：**
+- union[type, type, ...] -意味着满足其中之一即可
+- ```python
+from typing import Union
+
+a: Union[int, str] = "hi"
+
+my_list: list[Union[int, str]] = [1,2,3,"hi"]
+
+def cal(num1: Union[int, float], num2: Union[int, float]) -> Union[int, float]:
+    return num1 + num2
+```
