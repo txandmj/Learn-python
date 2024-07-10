@@ -711,7 +711,7 @@ print(fun2(10, 20))
 
 **基本语法：**
 - union[type, type, ...] -意味着满足其中之一即可
-- ```python
+```python
 from typing import Union
 
 a: Union[int, str] = "hi"
@@ -720,4 +720,119 @@ my_list: list[Union[int, str]] = [1,2,3,"hi"]
 
 def cal(num1: Union[int, float], num2: Union[int, float]) -> Union[int, float]:
     return num1 + num2
+```
+## 多态
+即多种状态，不同的对象调用相同的方法，表现出不同的状态，称为多态
+
+多态通常作用在继承关系上
+（一个父类，具有多个子类，不同的子类对象调用相同的方法，产生不同的状态）
+```python
+class Animal:
+    def cry(self):
+        pass
+class Cat(Animal):
+     def cry(self):
+         print("meow")
+class Dog(Animal):
+    def cry(self):
+        print("bark")
+#子类对象可以传递给父类类型
+def func(animal: Animal):
+    animal.cry()
+
+cat = Cat()
+dog = Dog()
+
+func(cat) #meow
+func(dog) #bark
+```
+**多态的好处：**
+- 增加了程序的灵活性，无论对象是谁，使用者都是同一种形式去调用。eg func(animal)
+- 增加了程序的可扩展性，通过继承Animal类创建了一个新类，使用者无需更改自己的代码，还是用func(animal)去调用
+### isinstance函数
+- isinstance()用于判断对象是否为某个类或其子类的对象
+- 基本语法：
+```python
+isinstance(object, classinfo)
+object: 对象
+classinfo: 可以是类名，基本类型或者由它们组成的元组
+num = 9
+print(isinstance(num, (str, int, tuple))) #True
+```
+Exercise:
+```python
+class A:
+    i = 10
+    def sum(self):
+        return self.getI() + 10
+    def sum1(self):
+        return self.i + 10
+    def getI(self):
+        return self.i
+    
+class B(A):
+    i = 20
+    def getI(self):
+        return self.i
+
+b = B() #对象为B
+#当调用对象成员的时候，会和对象本身动态关联，self指B
+print(b.sum()) # 30 20 + 10 = 30
+print(b.sum1()) # 30 20 + 10 = 30
+```
+```python
+class Employee:
+    __name = None
+    __sal = None
+
+    def __init__(self, name, sal):
+        self.__name = name
+        self.__sal = sal
+
+    def get_annual(self):
+        return self.__sal * 12
+    def set_name(self,name):
+        self.__name = name
+    def get_name(self):
+        return self.__name
+    def set_sal(self, sal):
+        self.__sal = sal
+    def get_sal(self):
+        return self.__sal
+
+class Worker(Employee):
+    def work(self):
+        #因为Worker类中并没有get_name()这个方法，所以可以用self.get_name(),此方法可以去找父类方法
+        #如果本类中有此方法，则必须要用super().get_name()去调用父类的方法
+        print(f"normal employee {self.get_name()} is working...")
+class Manager(Employee):
+    __bonus = None
+    #多了bonus属性，需要再次定义构造器
+    def __init__(self, name, sal, bonus):
+        super().__init__(name, sal)
+        self.__bonus = bonus
+
+    def manage(self):
+        print(f"manager {self.get_name()} is managing")
+
+    def __get_annual(self):
+        return super().get_annual() + self.__bonus
+#获取任何员工的年工资
+def show_emp_annual(employee: Employee):
+    print(f"{employee.get_name()}'salary is {employee.get_sal()}")
+#如果是普通员工，调用work, 经理调用manage方法
+def working(e: Employee):
+    if(isinstance(e, Worker)):
+        e.work()
+    elif(isinstance(e, Manager)):
+        e.manage()
+    else:
+        print("invalid")
+
+work = Worker("Tim", 10000)
+show_emp_annual(work)
+working(work)
+m = Manager("nancy", 20000, 100000)
+show_emp_annual(m)
+working(m)
 ```
