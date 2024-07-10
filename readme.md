@@ -836,3 +836,159 @@ m = Manager("nancy", 20000, 100000)
 show_emp_annual(m)
 working(m)
 ```
+## 魔术方法 Magic method
+- 在python中，所有以双下划线__包起来的方法称为魔术方法，不需要调用可以自动执行
+- 在类或对象的某些事件发生时会自动执行，让类具有神奇的“魔力”
+- 常用的运算符，for循环，以及类操作等都是运行在魔术方法之上的
+常用操作：
+- __str__: 打印对象默认返回：类型名 + 对象内存地址，子类往往重写__str__，用于返回对象的属性信息
+- 重写__str__，print(obj) or str(obj),都会自动调用__str__
+- __eq__: ==是比较运算符，对象之间进行比较，比较的是内存地址是否相等，即是否是同一个对象
+- 重写__eq__，可以用于判断对象内容/属性是否相等
+# 对象
+万物皆对象，类本身也是对象
+```python
+class Monster:
+    name = None
+    age = None
+    def hi(self):
+        print(f"hi(){self.name} - {self.age}")
+print(Monster)
+#通过class对象，可以引用属性（没有创建实例对象也可以访问/引用）
+print(f"Monster.name: {Monster.name} Monster.age: {Monster.age}")
+#通过类名如何调用非静态成员方法
+Monster.hi(Monster)
+```
+## 静态方法
+- @staticmethod 将方法转换为静态方法
+- 静态方法不会接收隐式的第一个参数，要声明一个静态方法，语法：
+```python
+class C:
+    @staticmethod
+    def f(arg1, arg2, arg3...):
+        statement
+        
+    @staticmethod
+    def hi():
+        print("hi")
+```
+- 静态方法既可以由类调用（C.f()),也可以由实例中调用（C().f())
+# 抽象类
+1. 默认情况下，python不提供抽象类，python附带一个模块，该模块为定义抽象基类提供了基础，该模块名称为abc
+2. 当我们需要抽象基类时，让类继承ABC(abc模块的ABC类)，使用@abstractmethod声明抽象方法
+（@abstractmethod用于声明抽象方法的装饰器，在abc模块中），那么这个类就是抽象类
+3. 抽象类的价值更多作用是在于设计，是设计者设计好后，让子类继承并实现抽象类的抽象方法
+```python
+from abc import ABC, abstractmethod
+class Animal(ABC):
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    @abstractmethod
+    def cry(self):
+        pass
+#抽象类（含有抽象方法），不能实例化
+#TypeError: Can't instantiate abstract class
+#animal = Animal("tiger", 2)
+class Tiger(Animal):
+    def cry(self):
+        print("ao~")
+
+tiger = Tiger("TT", 2)
+tiger.cry()
+```
+
+**注意事项**
+- 抽象类（含有抽象方法），不能实例化
+- 抽象类需要继承ABC，并且需要至少一个抽象方法，**两者缺一不可！
+```python
+#抽象类
+class Animal(ABC):
+    @abstractmethod
+    def cry(self):
+        pass
+#不是抽象类，没有继承ABC
+class Animal():
+    @abstractmethod
+    def cry(self):
+        pass
+#不是抽象类，没有@abstractmethod
+class Animal(ABC):
+    def cry(self):
+        pass
+```
+- 抽象类可以有普通方法
+```python
+#抽象类
+class Animal(ABC):
+    @abstractmethod
+    def cry(self):
+        pass
+    def eat(self):
+        pass
+```
+- 如果一个子类继承了抽象类，必须要实现抽象类中的全部抽象方法，否则它仍然是一个抽象类
+Exercise:
+```python
+from abc import ABC, abstractmethod
+class Employee(ABC):
+    def __init__(self, name, id, salary):
+        self.name = name
+        self.id = id
+        self.salary =salary
+    @abstractmethod
+    def work(self):
+        pass
+class CommonEmployee(Employee):
+    def work(self):
+        print(f"common employee {self.name} is working")
+class Manager(Employee):
+    def __init__(self, name, id, salary, bonus):
+        super().__init__(name, id, salary)
+        self.bonus = bonus
+    def work(self):
+        print(f"manager {self.name} is working")
+m = Manager("K", "111111", 100000, 100000)
+m.work()
+w = CommonEmployee("W", "22222", 10000)
+w.work()
+```
+## 模板设计模式
+设计模式：是在大量的实践中总结和理论化之后优选的代码结构，编程风格，以及解决问题的思考方式
+模板设计模式：抽象类体现的就是一种模板模式的设计，抽象类作为多个子类的通用模板，子类在抽象类的基础上进行扩展、改造，但是子类总体上会保留抽象类的行为方式
+模板设计模式能解决的问题：
+- 当功能内部一部分实现是确定，一部分实现是不确定的。这时可以把不确定的部分暴露出去，让子类去实现
+- 编写一个抽象父类，父类提供了多个子类的通用方法，并把一个或多个方法留给其子类实现，就是一种模板模式
+```python
+import time
+from abc import ABC, abstractmethod
+class Template(ABC):
+    @abstractmethod
+    def job(self):
+        pass
+    #计算程序运行时间
+    def cal_time(self):
+        # *1000 - > 毫秒
+        start_time = time.time() * 1000
+        self.job()
+        end_time = time.time() * 1000
+        print(end_time - start_time)
+
+class AA(Template):
+    def job(self):
+        num = 0
+        for i in range(1, 80001):
+            num += i
+
+class BB(Template):
+    def job(self):
+        num = 0
+        for i in range(1, 80001):
+            num -= i
+#if __name__ = '__main__':
+
+aa = AA()
+aa.cal_time() #13.9609375
+bb = BB()
+bb.cal_time() #12.96484375
+```
