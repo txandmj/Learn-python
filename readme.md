@@ -992,3 +992,103 @@ aa.cal_time() #13.9609375
 bb = BB()
 bb.cal_time() #12.96484375
 ```
+Exercise:
+```python
+#根据员工年龄进行排序
+class Person:
+    def __init__(self, name, age, job):
+        self.name = name
+        self.age = age
+        self.job = job
+    def __str__(self):
+        return f"{self.name} - {self.age} - {self.job}"
+
+
+p1 = Person("kim", 22, "software developer")
+p2 = Person("nancy", 33, "researcher")
+p3 = Person("Jon", 18, "deliver")
+my_list = [p1, p2, p3]
+#方法一： 冒泡排序
+# def bubble_sort(my_list: list[Person]):
+#     for i in range(0, len(my_list) - 1):
+#         for j in range(0, len(my_list) - 1 - i):
+#改为根据年龄进行判断
+#             if my_list[j].age < my_list[j + 1].age:
+#                 my_list[j], my_list[j+1] = my_list[j+1], my_list[j]
+#
+# print("sort".center(32, '-'))
+# bubble_sort(my_list)
+#输出排序后结果
+# for ele in my_list:
+#     print(ele)
+#方法二： 根据sort函数进行年龄排序（key为排序函数体，reverse T为从大到小，F为从小到大）
+my_list.sort(key = lambda ele: ele.age, reverse = True)
+for ele in my_list:
+    print(ele)
+```
+练习魔术方法：__eq__
+```python
+class Doctor:
+    def __init__(self, name, age, job, gender, sal):
+        self.name = name
+        self.age = age
+        self.job = job
+        self.gender = gender
+        self.sal = sal
+
+    def __eq__(self, other):
+        if not isinstance(other, Doctor):
+            return False
+        return (self.name == other.name and
+                self.age == other.age and
+                self.job == other.job and
+                self.gender == other.gender and
+                self.sal == other.sal)
+doctor1 = Doctor("tim", 33, "dentist", "male", 10000)
+doctor2 = Doctor("tim", 33, "dentist", "male", 10000)
+print(doctor1 == doctor2) #True
+```
+# error, exception
+python 有两种不同错误：语法错误（句法错误/解析错误）和异常（正确的语法，但是执行时候检测到的错误）
+## 捕获异常
+```python
+try:
+    n1 = 4
+    n2 = 0
+    res = n1 / n2
+except Exception as e:
+    print(e) #division by zero
+print("continue") #continue
+```
+## 异常处理
+常见语法：
+```python
+try:
+    可能出现异常的代码
+    #[Exception as e]是可选项，表示捕获到try中出现的异常，并通过别名e接收
+except [异常 as e]:
+    对异常处理的代码
+[else:]
+    没有发生异常，执行的代码
+[finally:]
+    不管有没有异常，都要执行的代码
+Note: []是可选项，可有可无
+```
+**注意事项：**
+- 如果异常发生了，则异常发生后面的代码不会执行，直接进入到except子句
+- 如果没有异常发生，则顺序执行try的代码块，不会进入except子句
+- 如果希望没有发生异常时，要执行某段代码，则使用else子句
+- 如果希望不管是否有异常发生，都执行某段代码，则使用finally子句
+- 可以有多个except子句，捕获不同的异常，如果发生异常，只会匹配一个异常。通常把具体的异常放前面，基类异常放后面
+- 一个except子句，可以捕获不同的异常
+Exercise:
+```python
+age = 0
+while(True):
+    try:
+        age = int(input("enter age: "))
+        break
+    except:
+        print("enter integer age")
+print(age)
+```
