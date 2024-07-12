@@ -1104,3 +1104,115 @@ raise NameError('Hi There')
 - 程序可以通过创建新的异常类命名子句的异常。不论是以直接还是间接的方式，异常都应从Except类派生
 - 异常类通常应当保持简单，它往往只提供一些属性，允许相应的异常处理程序提取有关错误的信息
 - 大多数异常命名都已“Error"结尾，类似标准异常的命名，但是需要注意不要使用内置异常名
+# 文件
+是保存数据的地方
+输入（读文件）：数据从数据源（文件）到程序（内存）
+输出（写文件）：数据从程序（内存）到数据源（文件）
+I/O（input/output）类型
+主要为文本I/O（通常是记事本可以直接打开的，.py, .txt等）和二进制I/O(图片，视频，音频等)，在处理不同类型文件时，需要用对应的方式打开处理
+文件编码（字符编码）：UTF-8最常用
+- 创建文件操作
+```python
+f1 = open("d://a//hi.txt", "w", encoding = "utf-8")
+如果我们要创建一个文件，只需要以mode = "w"(write)形式打开文件，如果文件不存在，系统会自动创建文件
+注意：encoding = "utf-8" 不能少
+```
+- 读文件
+```python
+f = open("d://a//hello.txt", "r", encoding = "utf-8")
+# 方式1：
+content = f.read() #一次性读取全部内容
+content = f.read(6) #规定读取6个字符
+# 方式2：
+line1 = f.readline() #读取第一行\n
+line2 = f.readline() #读取第二行\n
+print(line1, end = "")#必须加end = ""，否则输出将换2行，因为print也自带换行
+# 方式3：
+lines = f.readlines() #['第一行数据\n', '第二行数据\n', '第三行数据\n'...]
+for line in lines:#lines是一个list
+    print(line, end="")
+# 方式4：
+for line in f:
+    print(line, end="")
+f.close()
+```
+- 写文件
+```python
+# mode = "w"打开文件，如果文件不存在，会创建，如果文件已经存在，会先截断打开的文件，也就是清空文件（！！！）
+# 如果我们希望以追加的方式写入，需要mode="a"
+f = open("d://a//hello.txt", "w", encoding = "utf-8")
+# 写入10行
+i = 0
+while i < 10:
+    f.write("hi\n")
+    i += 1
+f.close()
+#将内容覆盖成10句“hello"
+#将文件在”w"的状态下打开，写入文件就是覆盖
+//"a"模式就是在原有文件上追加
+f = open("d://a//hello.txt", "a", encoding = "utf-8")
+i = 0
+while i < 10:
+    f.write("python\n")
+    i += 1
+f.close()
+```
+- 删除文件
+```python
+import os
+if os.path.exists("d://a//abc.txt"):
+    os.remove("d://a//abc.txt")
+else:
+    print("the file is not exists")
+```
+## 目录操作
+```python
+#创建一级目录
+import os
+if os.path.isdir("d://aaa"):#判断是否存在
+    print("direct is exists")
+else:
+    os.mkdir("d://aaa")#不存在，就创建一级目录
+#创建多级目录
+import os
+if os.path.isdir("d://bbb//ccc"):#判断是否存在
+    print("direct is exists")
+else:
+    os.makedirs("d://bbb//ccc")#创建多级目录
+#删除目录
+import os
+if os.path.isdir("d://aaa"):#判断是否存在
+    os.rmdir("d://aaa")#删除一级目录
+    os.removedirs("d://bbb//ccc")#删除多级目录
+else:
+    print("not exists")
+```
+## 获取文件的相关信息
+```python
+import os
+import time
+#time.ctime()是将返回来的时间戳转为字符串形式
+f_stat = os.stat("d:/a/hello.txt")
+print(f"文件大小{f_stat.st_size} \n"
+f"最近访问时间{time.ctime(f_stat.st_atime)} \n"
+f"最近的修改时间{time.ctime(f_stat.st_mtime)} \n"
+f"文件创建时间{time.ctime(f_stat.st_ctime)}")
+```
+**注意事项：**
+- f.flush():刷新流的写入缓冲区到文件
+    - 调用f.write(),内容并没有真正写入文件，而是先积攒到缓存区
+    - 当调用flush()时，内容会真正写入到文件
+    - 这样做是为了避免频繁操作硬盘，导致效率过低
+- f.close():刷新并关闭此流，也就是f.close()内置的flush功能
+- with open() as f:在处理文件对象时，子句体结束后，文件会自动关闭
+```python
+#with子句的方式完成文件拷贝，可以读一部分写一部分
+#f.read(),f.write()是直接读取并写入全部文件，对内存压力很大
+#使用with子句可以自动关闭文件
+f_src_path = "C:/Users/Administrator/Music/无名.mp3"
+f_dst_path = "d:/a/无名_new.mp3"
+with open(f_src_path, "rb") as f_src:
+    with open(f_dst_path, "wb") as f_dst:
+        for data in f_src:
+            f_dst.write(data)
+``` 
